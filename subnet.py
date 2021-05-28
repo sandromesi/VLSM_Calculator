@@ -1,12 +1,14 @@
 
 import ipaddress
-import math 
+import math
+import operator
 
 assignedNetwork = ipaddress.ip_network("192.168.1.0/24")
 maxAddresses = assignedNetwork.num_addresses
 nextSubnet = ""
 subnetCounter = maxAddresses
-vlsm = {}
+subnetDict = {}
+subnetList = []
 
 class Subnet:
 
@@ -19,19 +21,31 @@ class Subnet:
         self.lastHost = lastHost
         self.totalHosts = totalHosts
 
+    #ADD NAME AND HOST NUMBER TO A DICTIONARY
+    def addToDict(name, numHosts):
+        global subnetDict
+        subnetDict.update({name:numHosts})
+
+    #SORT A DICTIONARY BY VALUE IN DECREASING ORDER
+    def sortDict():
+        global subnetDict
+        print("---------------------------------------------- inside sortDict")
+        sortedSubnetDict = dict( sorted(subnetDict.items(), key=operator.itemgetter(1),reverse=True))
+        return sortedSubnetDict
+
     #CREATE SUBNET
-    def createSubnet(name, numHosts):
+    def createSubnet(subnetDict):
         global nextSubnet
-        global subnetCounter
-        global vlsm
+        global subnetList
 
-        if 0 > subnetCounter - 6:
-            print("\nYou have no more hosts left to assign!")
+        #for i in subnetDict:
+            #name = list(subnetDict)[i]
+            #numHosts = list(subnetDict.values())[i]
 
-        elif numHosts > subnetCounter - 6:
-            print(f"\nYou just have {subnetCounter - 6} host left to assign!")
-
-        else: 
+        for key, value in subnetDict.items():
+            name = key
+            numHosts = value
+    
             hostBit = math.ceil(math.log((numHosts + 1), 2))
 
             cidr = 32 - hostBit
@@ -47,15 +61,81 @@ class Subnet:
             firstHost = ipaddress.IPv4Address(network + 1)
             lastHost = ipaddress.IPv4Address(broadcast - 1)
             totalHosts = subnet.num_addresses - 2
-
             nextSubnet = ipaddress.IPv4Address(broadcast + 1)
 
             newSubnet = Subnet(name, cidr, network, broadcast, firstHost, lastHost, totalHosts)
 
-            subnetCounter = subnetCounter - subnet.num_addresses
+            subnetList.append(newSubnet)
+            
+            Subnet.printSubnet(newSubnet)
 
-            return newSubnet
+    #SYSTEM
+    def system():
+        global subnetCounter
+        global subnetDict
+        Subnet.sysInput()
+            
+    def sysInput():
+        global subnetCounter
+        print(f"couter: {subnetCounter}")
+        name = input("\nType the subnet name: ")
+        
+        while True:
+            try:
+                print("---------------------------------------------- inside while - sysInput")
+                numHosts = int(input(f"\nHow many hosts does {name} need? "))
 
+                if numHosts <= 0:
+                    print("---------------------------------------------- inside while  - sysInput - if")
+                    print("\nPlease, type numbers greater than zero.")
+
+                elif numHosts > subnetCounter - 6:
+                    print("---------------------------------------------- inside while - sysInput - elif")
+                    print(f"\nYou just have {subnetCounter - 6} host left to assign!")
+                
+                else:
+                    print("---------------------------------------------- inside while - sysInput - else")
+                    subnetCounter = subnetCounter - (2**(math.ceil(math.log((numHosts + 1), 2))))
+                    print(f"couter: {subnetCounter}")
+                    subnetDict.update({name:numHosts})
+                    print(f"subnetDict: {subnetDict}")
+                    break                                 
+            except:
+                print("---------------------------------------------- inside - sysInput - except")
+                print("\nOnly numbers are allowed.")
+
+        Subnet.addQuestion()
+
+    def addQuestion():
+        print("---------------------------------------------- inside addQuestion")
+
+        answer = input("Do you want add another subnet? (s/n): ")
+
+        if answer == "s":
+            print(answer)
+            print("---------------------------------------------- inside addQuestion - s if")
+            if subnetCounter - 6 < 0:
+                print("\nYou have no more hosts left to assign!")
+                print(f"subnetDict: {subnetDict}")
+                sortedSubnetDict = Subnet.sortDict()
+                print(f"SORTED subnetDict: {sortedSubnetDict}")
+                Subnet.createSubnet(sortedSubnetDict)
+
+            else:
+                Subnet.sysInput()
+            
+        elif answer == "n":
+            print(answer)
+            print("---------------------------------------------- inside addQuestion - n elif")
+            print(f"subnetDict: {subnetDict}")
+            sortedSubnetDict = Subnet.sortDict()
+            print(f"SORTED subnetDict: {sortedSubnetDict}")
+            Subnet.createSubnet(sortedSubnetDict)
+
+
+        else:
+            print("Please, type \"s\" or \"n\" only.")
+  
     #PRINT SUBNET
     def printSubnet(object):
         print(f"\nName: {object.name}")
