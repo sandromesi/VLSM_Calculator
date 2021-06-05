@@ -1,0 +1,43 @@
+################################# Sample 1 #################################
+
+172.16.0.0/16
+Research and Development
+300
+s
+Sales
+150
+s
+Manufacturing
+550
+s
+Voip
+62
+s
+Wireless
+30
+s
+Server
+6
+s
+Partner
+254
+n
+
+################################# Sample 2 #################################
+
+192.168.1.0/24
+Point-to-point connection
+2
+s
+Toronto LAN B
+45
+s
+Tokyo LAN A
+110
+s
+Toronto LAN A
+29
+s
+Tokyo LAN B
+8
+n
