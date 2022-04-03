@@ -1,7 +1,7 @@
 
 #https://docs.python.org/3/library/ipaddress.html
 
-from subnet import Subnet
+from Subnet import Subnet
 
 Subnet.networkInput()
 name = Subnet.nameInput()
