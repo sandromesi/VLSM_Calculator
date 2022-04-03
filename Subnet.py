@@ -125,9 +125,9 @@ class Subnet:
     #ASK TO ADD ANOTHER SUBNET
     def addQuestion():
 
-        answer = input("Do you want add another subnet? (s/n): ")
+        answer = input("Do you want add another subnet? (y/n): ")
 
-        if answer == "s":
+        if answer == "y":
 
             if subnetCounter < 2:
                 print("\nYou have no more hosts left to assign!")
@@ -143,7 +143,7 @@ class Subnet:
             Subnet.createSubnet(sortedSubnetDict)
 
         else:
-            print("Please, type \"s\" or \"n\" only.")
+            print("Please, type \"y\" or \"n\" only.")
   
     #PRINT SUBNET
     def printSubnet(object):
